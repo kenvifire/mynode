@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>3A58E954-AC74-47B6-8E85-F51A1EE06FEF</string>
+	<key>IDESourceControlProjectName</key>
+	<string>mynode</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>0A6FA3BAE696ECDF53DBC2DC6440A57F2B5B3FB6</key>
+		<string>https://github.com/kenvifire/mynode.git</string>
+		<key>D9F2F88568060AB21532234138859F781C8C2636</key>
+		<string>https://chromium.googlesource.com/v8/v8.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>build/mynode.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>0A6FA3BAE696ECDF53DBC2DC6440A57F2B5B3FB6</key>
+		<string>../../..</string>
+		<key>D9F2F88568060AB21532234138859F781C8C2636</key>
+		<string>../../../../v8</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/kenvifire/mynode.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>0A6FA3BAE696ECDF53DBC2DC6440A57F2B5B3FB6</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>0A6FA3BAE696ECDF53DBC2DC6440A57F2B5B3FB6</string>
+			<key>IDESourceControlWCCName</key>
+			<string>mynode</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>D9F2F88568060AB21532234138859F781C8C2636</string>
+			<key>IDESourceControlWCCName</key>
+			<string>v8</string>
+		</dict>
+	</array>
+</dict>
+</plist>

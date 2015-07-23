@@ -4,12 +4,12 @@
         'target_name': 'mynode',
         'type': 'executable',
         'sources': [
-          'src/mynode.cc',
-		  'src/mynode.h',
-		  'src/mynode_main.cc'
+         	'../src/mynode.cc',
+		'../src/mynode.h',
+		'../src/mynode_main.cc'
         ],
 		'include_dirs':[
-			'/Users/hannahzhang/code/v8_work/v8'
+			'/Users/kenvi/code/study/v8'
 		],
         'cflags':[
             '-stdlib=libstdc++',
