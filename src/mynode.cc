@@ -22,6 +22,7 @@ namespace mynode {
                        bool report_exception);
     void Load(const FunctionCallbackInfo<Value>& args );
     int RunMain(Isolate* isolate, int argc, char* argv[]);
+    void Require(const FunctionCallbackInfo<Value>& args);
 
     class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
     public:
@@ -70,6 +71,9 @@ namespace mynode {
 
         global->Set(String::NewFromUtf8(isolate, "loadFile",NewStringType::kNormal).ToLocalChecked(),
                     FunctionTemplate::New(isolate, Load));
+        
+        global->Set(String::NewFromUtf8(isolate, "require",NewStringType::kNormal).ToLocalChecked(),
+                    FunctionTemplate::New(isolate, Require));
 
         return Context::New(isolate, NULL, global);
 
@@ -97,7 +101,7 @@ namespace mynode {
                 return;
             }
 
-            if (!ExecuteString(args.GetIsolate(), source, args[i], false, false)) {
+            if (ExecuteString(args.GetIsolate(), source, args[i], false, false)) {
                 args.GetIsolate()->ThrowException(
                     String::NewFromUtf8(args.GetIsolate(), "Error executing file",
                                         NewStringType::kNormal).ToLocalChecked());
@@ -120,7 +124,7 @@ namespace mynode {
 
             if(report_exception)
                 ReportException(isolate, &try_catch);
-            return false;
+            return  false;
         }else {
             Local<Value> result;
             if (!script->Run(context).ToLocal(&result)) {
@@ -128,7 +132,7 @@ namespace mynode {
 
                 if (report_exception)
                     ReportException(isolate, &try_catch);
-               return false;
+                return false;
             } else {
                 assert(!try_catch.HasCaught());
                 if (print_result && !result->IsUndefined()) {
@@ -280,6 +284,45 @@ namespace mynode {
                 return 1;
 
         }
+    }
+    
+    void Require(const FunctionCallbackInfo<Value>& args) {
+        Isolate* isolate = Isolate::GetCurrent();
+        HandleScope scope(isolate);
+        
+        if (args.Length() < 1) {
+            isolate->ThrowException(Exception::TypeError(
+                                                         String::NewFromUtf8(isolate, "Wrong number of arguments")));
+            return;
+        }
+        const char* file_name = *String::Utf8Value(args[0]->ToString(isolate));
+        Local<String> source;
+        if(!ReadFile(isolate, file_name).ToLocal(&source)){
+            fprintf(stderr, "Error reading %s\n", file_name);
+            return;
+        }
+       
+        TryCatch try_catch(isolate);
+        ScriptOrigin origin(args[0]->ToString(isolate));
+        Local<Context> context(isolate->GetCurrentContext());
+        Local<Script> script;
+        
+        if(Script::Compile(context, source, &origin).ToLocal(&script)) {
+            Local<Value> result;
+            if (!script->Run(context).ToLocal(&result)) {
+                assert(try_catch.HasCaught());
+                ReportException(isolate, &try_catch);
+                return;
+            } else {
+                assert(!try_catch.HasCaught());
+                if (!result->IsUndefined()) {
+                    args.GetReturnValue().Set(result);
+                }
+            }
+            
+        }
+        return;
+        
     }
 
 }

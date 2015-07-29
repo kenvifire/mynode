@@ -1,4 +1,8 @@
-function test(a,b) {
-	return a+b;
+function test() {
+	return {
+		add : function(a,b){
+			return a+b;
+		}
+	}
 }
-exports.test = test;	
+test();
