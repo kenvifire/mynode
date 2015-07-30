@@ -31,7 +31,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "290"
             endingLineNumber = "290"
-            landmarkName = "Require(const FunctionCallbackInfo&lt;Value&gt;&amp; args)"
+            landmarkName = "RunMain(Isolate* isolate, int argc, char* argv[])"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
