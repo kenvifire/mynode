@@ -1,8 +1,1 @@
-function test() {
-	return {
-		add : function(a,b){
-			return a+b;
-		}
-	}
-}
-test();
+print(1+2);

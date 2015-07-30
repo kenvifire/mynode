@@ -23,6 +23,8 @@ namespace mynode {
     void Load(const FunctionCallbackInfo<Value>& args );
     int RunMain(Isolate* isolate, int argc, char* argv[]);
     void Require(const FunctionCallbackInfo<Value>& args);
+    void LoadScript(const FunctionCallbackInfo<Value>& args);
+    void RunScript(const FunctionCallbackInfo<Value> &  args);
 
     class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
     public:
@@ -75,6 +77,12 @@ namespace mynode {
         global->Set(String::NewFromUtf8(isolate, "require",NewStringType::kNormal).ToLocalChecked(),
                     FunctionTemplate::New(isolate, Require));
 
+        global->Set(String::NewFromUtf8(isolate, "loadScript",NewStringType::kNormal).ToLocalChecked(),
+                    FunctionTemplate::New(isolate, LoadScript));
+        
+        global->Set(String::NewFromUtf8(isolate, "runScript",NewStringType::kNormal).ToLocalChecked(),
+                    FunctionTemplate::New(isolate, RunScript));
+        
         return Context::New(isolate, NULL, global);
 
     }
@@ -286,6 +294,7 @@ namespace mynode {
         }
     }
     
+    
     void Require(const FunctionCallbackInfo<Value>& args) {
         Isolate* isolate = Isolate::GetCurrent();
         HandleScope scope(isolate);
@@ -306,6 +315,64 @@ namespace mynode {
         ScriptOrigin origin(args[0]->ToString(isolate));
         Local<Context> context(isolate->GetCurrentContext());
         Local<Script> script;
+        
+        if(Script::Compile(context, source, &origin).ToLocal(&script)) {
+            Local<Value> result;
+            if (!script->Run(context).ToLocal(&result)) {
+                assert(try_catch.HasCaught());
+                ReportException(isolate, &try_catch);
+                return;
+            } else {
+                assert(!try_catch.HasCaught());
+                if (!result->IsUndefined()) {
+                    args.GetReturnValue().Set(result);
+                }
+            }
+            
+        }
+        return;
+        
+    }
+    
+    
+    void LoadScript(const FunctionCallbackInfo<Value>& args) {
+        Isolate* isolate = Isolate::GetCurrent();
+        HandleScope scope(isolate);
+        
+        if (args.Length() < 1) {
+            isolate->ThrowException(Exception::TypeError(
+                                                         String::NewFromUtf8(isolate, "Wrong number of arguments")));
+            return;
+        }
+        const char* file_name = *String::Utf8Value(args[0]->ToString(isolate));
+        Local<String> source;
+        if(!ReadFile(isolate, file_name).ToLocal(&source)){
+            fprintf(stderr, "Error reading %s\n", file_name);
+            return;
+        }
+        
+        args.GetReturnValue().Set(source);
+        
+    }
+    
+    
+    void RunScript(const FunctionCallbackInfo<Value> &  args) {
+        Isolate* isolate = Isolate::GetCurrent();
+        HandleScope scope(isolate);
+        
+        if (args.Length() < 1) {
+            isolate->ThrowException(Exception::TypeError(
+                                                         String::NewFromUtf8(isolate, "no source")));
+            return;
+        }
+        
+        ScriptOrigin origin(args[0]->ToString(isolate));
+        Local<Context> context(isolate->GetCurrentContext());
+        Local<Script> script;
+        Local<String> source;
+        source = args[0]->ToString(isolate);
+        TryCatch try_catch(isolate);
+
         
         if(Script::Compile(context, source, &origin).ToLocal(&script)) {
             Local<Value> result;
