@@ -1,3 +1,2 @@
 .DS_Store
-mynode.xcodeproj/*
-build/mynode.xcodeproj
+build/mynode.xcodeproj/*
