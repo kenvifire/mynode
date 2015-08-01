@@ -1,3 +1,9 @@
-var test = require('/Users/kenvi/code/study/mynode/src/module.js');
+var module = require('/Users/kenvi/code/study/mynode/src/module');
+module.test();
 
-print(test.add(1,2));
+
+var module1 = require('/Users/kenvi/code/study/mynode/src/module');
+
+module1.test();
+
+
