@@ -9,6 +9,7 @@
 
 #include "include/libplatform/libplatform.h"
 #include "include/v8.h"
+#include "time_wrap.h"
 
 using namespace v8;
 
@@ -354,6 +355,7 @@ namespace mynode {
         args.GetReturnValue().Set(source);
         
     }
+    
     
     
     void RunScript(const FunctionCallbackInfo<Value> &  args) {
