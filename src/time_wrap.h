@@ -20,7 +20,7 @@ namespace mynode{
     public:
         static void Initialize(Handle<Object> target, Handle<Value> unused,
                                Handle<Context> context);
-        void now(const FunctionCallbackInfo<Value>& args);
+        static void now(const FunctionCallbackInfo<Value>& args);
         
     private:
         

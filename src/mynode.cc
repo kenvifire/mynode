@@ -84,6 +84,9 @@ namespace mynode {
         global->Set(String::NewFromUtf8(isolate, "runScript",NewStringType::kNormal).ToLocalChecked(),
                     FunctionTemplate::New(isolate, RunScript));
         
+        //register modules
+        
+        
         return Context::New(isolate, NULL, global);
 
     }

@@ -14,9 +14,31 @@
 #include <event2/util.h>
 #include <stdint.h>
 #include "include/v8.h"
+#include "mynode.h"
+#include "time_wrap.h"
 
 using namespace v8;
 using namespace mynode;
+
+void Timer::Initialize(Handle<Object> target, Handle<Value> moduleName,
+                       Handle<Context> context){
+    Isolate* isolate = Isolate::GetCurrent();
+    Local<FunctionTemplate> constructor = FunctionTemplate::New(isolate);
+    constructor->SetClassName(String::NewFromUtf8(isolate, "Timer"));
+    
+    MYNODE_SET_PROTOTYPE_METHOD(constructor, "now", now);
+    
+    target->Set(String::NewFromUtf8(isolate, "Timer"), constructor->GetFunction());
+    
+    
+    
+    
+    // prototype
+    
+    target->Set(String::NewFromUtf8(isolate, "Timer"),
+                constructor->GetFunction());
+    
+}
 
 void Timer::now(const FunctionCallbackInfo<Value>& args) {
     struct timeval tv;
