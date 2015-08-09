@@ -10,11 +10,18 @@
 #include "include/libplatform/libplatform.h"
 #include "include/v8.h"
 #include "time_wrap.h"
+#include "mynode.h"
 
 using namespace v8;
 
 
 namespace mynode {
+    
+   static mynode_module* modlist_builtin;
+    
+    
+    
+    
 
     MaybeLocal<String> ReadFile(Isolate* isolate, const char* name);
     void ReportException(Isolate* isolate, TryCatch* try_catch);
@@ -25,7 +32,8 @@ namespace mynode {
     int RunMain(Isolate* isolate, int argc, char* argv[]);
     void Require(const FunctionCallbackInfo<Value>& args);
     void LoadScript(const FunctionCallbackInfo<Value>& args);
-    void RunScript(const FunctionCallbackInfo<Value> &  args);
+    void RunScript(const FunctionCallbackInfo<Value> & args);
+    void LoadModule(const FunctionCallbackInfo<Value> & args);
 
     class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
     public:
@@ -89,6 +97,18 @@ namespace mynode {
         
         return Context::New(isolate, NULL, global);
 
+    }
+    
+    void LoadModule(const FunctionCallbackInfo<Value>& args) {
+        HandleScope hadle_scope(args.GetIsolate());
+        
+        if(args.Length() < 1) {
+            args.GetIsolate()->ThrowException(String::NewFromUtf8(args.GetIsolate(), "no module name",
+                                                                  NewStringType::kNormal).ToLocalChecked());
+            return;
+        }
+        
+          
     }
 
     void Load(const FunctionCallbackInfo<Value>& args ) {
@@ -396,5 +416,21 @@ namespace mynode {
         return;
         
     }
+    
+    extern "C" void mynode_module_register(void *m) {
+        struct mynode_module* mp = reinterpret_cast<struct mynode_module*>(m);
+        
+        mp->nm_link = modlist_builtin;
+        modlist_builtin = mp;
+    }
+  
+    static void Binding(const FunctionCallbackInfo<Value> & args) {
+        HandleScope handle_scope(args.GetIsolate());
+        Isolate* isolate = args.GetIsolate();
+        
+        //Local<String> module = args[0]->ToObject();
+        
+    }
+
 
 }

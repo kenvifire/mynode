@@ -14,6 +14,15 @@
 namespace mynode {
     int Start(int argc, char* argv[]);
     
+    extern "C" void mynode_module_register(void *mod);
+   
+    class Environment;
+    Environment* CreateEnvironment(v8::Isolate isolate,
+                                   v8::Handle<v8::Context> context,
+                                   int argc,
+                                   const char* const* argv
+                                   );
+    
     template <typename TypeName>
     inline void MYNODE_SET_METHOD(const TypeName& recv,
                                   const char* name,
@@ -47,6 +56,57 @@ namespace mynode {
     
     #define MYNODE_SET_PROTOTYPE_METHOD mynode::MYNODE_SET_PROTOTYPE_METHOD
     
+    typedef void (*addon_register_func)(
+        v8::Handle<v8::Object> exports,
+        v8::Handle<v8::Value> module,
+        v8::Handle<v8::Context> context,
+        void * priv);
+    typedef void (*addon_context_register_func) (
+        v8::Handle<v8::Object> exports,
+        v8::Handle<v8::Value> module,
+        v8::Handle<v8::Context> context,
+        void * priv);
+    
+    
+    struct mynode_module {
+        int nm_version;
+        unsigned int nm_flags;
+        void* nm_dso_handle;
+        const char* nm_filename;
+        mynode::addon_register_func nm_register_func;
+        mynode::addon_context_register_func nm_context_register_func;
+        const char* nm_modname;
+        void* nm_priv;
+        struct mynode_module* nm_link;
+    };
+    
+    
+    #define MYNODE_C_CTOR(fn)                                      \
+        static void fn(void) __attribute__((constructor));         \
+        static void fn(void)
+    
+    #define MYNODE_STRINGFY(n) #n
+    
+    
+    
+    #define MYNODE_MODULE_REGISTER(modname, regfunc, priv, flags ) \
+      extern "C" {                                                 \
+         static mynode::mynode_module _module =                    \
+         {                                                         \
+            1,                                                      \
+            flags,                                                  \
+            NULL,                                                   \
+            __FILE__,                                               \
+            NULL,                                                   \
+            (mynode::addon_context_register_func) (regfunc),        \
+            MYNODE_STRINGFY(modname),                               \
+            priv,                                                   \
+            NULL                                                    \
+         };                                                         \
+         MYNODE_C_CTOR(_register_ ## modname) {                     \
+             mynode_module_register(&_module);                       \
+         }                                                          \
+        }
 }
 
 #endif

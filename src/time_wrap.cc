@@ -37,6 +37,7 @@ void Timer::Initialize(Handle<Object> target, Handle<Value> moduleName,
     
     target->Set(String::NewFromUtf8(isolate, "Timer"),
                 constructor->GetFunction());
+    printf("loading timer");
     
 }
 
@@ -48,3 +49,5 @@ void Timer::now(const FunctionCallbackInfo<Value>& args) {
     args.GetReturnValue().Set(now);
     
 }
+
+MYNODE_MODULE_REGISTER(timer, mynode::Timer::Initialize, NULL, 1)
