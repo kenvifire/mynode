@@ -1,0 +1,16 @@
+//
+//  evn.c
+//  mynode
+//
+//  Created by kenvi.zhu on 15/8/8.
+//
+//
+
+#include <stdio.h>
+
+#include "include/v8.h"
+#include "env.h"
+
+namespace mynode {
+    
+}
