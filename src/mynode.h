@@ -17,11 +17,7 @@ namespace mynode {
     extern "C" void mynode_module_register(void *mod);
    
     class Environment;
-    Environment* CreateEnvironment(v8::Isolate isolate,
-                                   v8::Handle<v8::Context> context,
-                                   int argc,
-                                   const char* const* argv
-                                   );
+   
     
     template <typename TypeName>
     inline void MYNODE_SET_METHOD(const TypeName& recv,

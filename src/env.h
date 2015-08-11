@@ -17,8 +17,9 @@ namespace mynode {
     class Environment {
     private:
         v8::Isolate* const isolate_;
-        v8::Context context_;
+        v8::Persistent<v8::Context> context_;
         v8::Persistent<v8::Object> binding_object_cache_;
+        v8::Persistent<v8::Array> module_load_list_array_;
         inline Environment(v8::Local<v8::Context> context);
     public:
         static inline Environment* GetCurrent(v8::Isolate* isolate);
@@ -36,6 +37,14 @@ namespace mynode {
         inline v8::Local<v8::Object> binding_object_cache() const ;
        
         inline void set_binding_object_cache(v8::Local<v8::Object> value) ;
+       
+        inline v8::Local<v8::Array> module_load_list_array() const;
+        
+        inline void set_module_load_list_array(v8::Local<v8::Array> value);
+        
+        inline v8::Local<v8::Context> context() const;
+        
+        inline void set_context(v8::Local<v8::Context> value);
      
         
     };

@@ -11,7 +11,10 @@
 #include "include/v8.h"
 #include "time_wrap.h"
 #include "mynode.h"
-#include "env-inl.h"
+#include "env.h"
+#include "env.cc"
+#include "utils.h"
+#include "utils-inl.h"
 
 using namespace v8;
 
@@ -35,6 +38,12 @@ namespace mynode {
     void LoadScript(const FunctionCallbackInfo<Value>& args);
     void RunScript(const FunctionCallbackInfo<Value> & args);
     void LoadModule(const FunctionCallbackInfo<Value> & args);
+    Environment* CreateEnvironment(v8::Isolate* isolate,
+                                   v8::Handle<v8::Context> context,
+                                   int argc,
+                                   const char* const* argv
+                                   );
+    static void Binding(const FunctionCallbackInfo<Value> & args);
 
     class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
     public:
@@ -93,7 +102,10 @@ namespace mynode {
         global->Set(String::NewFromUtf8(isolate, "runScript",NewStringType::kNormal).ToLocalChecked(),
                     FunctionTemplate::New(isolate, RunScript));
         
-        //register modules
+        
+        global->Set(String::NewFromUtf8(isolate, "binding",NewStringType::kNormal).ToLocalChecked(),
+                    FunctionTemplate::New(isolate, Binding));
+        
         
         
         return Context::New(isolate, NULL, global);
@@ -270,6 +282,7 @@ namespace mynode {
 
             // Create a new context.
             Local<Context> context = CreateContext(isolate);
+            Environment* env = CreateEnvironment(isolate, context, argc, argv);
 
             // Enter the context for compiling and running the hello world script.
             Context::Scope context_scope(context);
@@ -424,13 +437,69 @@ namespace mynode {
         mp->nm_link = modlist_builtin;
         modlist_builtin = mp;
     }
+    
+    struct mynode_module* get_builttin_module(const char* name) {
+        struct mynode_module* mp;
+        
+        for (mp = modlist_builtin; mp != NULL; mp=mp->nm_link) {
+            if(strcmp(mp->nm_modname, name) == 0) {
+                break;
+            }
+        }
+        
+        assert(mp == NULL);
+        return (mp);
+    }
   
     static void Binding(const FunctionCallbackInfo<Value> & args) {
         HandleScope handle_scope(args.GetIsolate());
         Isolate* isolate = args.GetIsolate();
+        Environment* env = Environment::GetCurrent(args.GetIsolate());
         
-        //Local<String> module = args[0]->ToObject();
+        Local<String> module = args[0]->ToString();
         
+        Local<Object> cache = env->binding_object_cache();
+        Local<Object> exports;
+        
+        if(cache->Has(module)) {
+            exports = cache->Get(module)->ToObject();
+            args.GetReturnValue().Set(exports);
+            return;
+        }
+        
+        char buff[1024];
+        snprintf(buff, sizeof(buff), "binding %s", module->ToString());
+        
+        Local<Array> modules = env->module_load_list_array();
+        uint32_t len = modules->Length();
+        modules->Set(len, OneByteString(isolate, buff));
+       
+        mynode_module* load_module = get_builttin_module(buff);
+        
+        if(load_module != NULL) {
+            exports = Object::New(env->isolate());
+            
+            Local<Value> unused = Undefined(env->isolate());
+            load_module->nm_context_register_func(exports,unused,
+                                                  env->context(),
+                                                  load_module->nm_priv);
+            cache->Set(module, exports);
+           
+            args.GetReturnValue().Set(exports);
+            
+        }
+        
+        
+        
+        
+    }
+    Environment* CreateEnvironment(v8::Isolate* isolate,
+                                   v8::Handle<v8::Context> context,
+                                   int argc,
+                                   const char* const* argv
+                                   ){
+        Environment *env = Environment::New(context);
+        return env;
     }
 
 

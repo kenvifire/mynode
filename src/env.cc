@@ -21,7 +21,7 @@ inline Environment* Environment::GetCurrent(v8::Local<v8::Context> context){
 }
 
 inline Environment* Environment::New(v8::Local<v8::Context> context){
-    Environment* env = New(context);
+    Environment* env = new Environment(context);
     env->AssignToContext(context);
     
     return env;
@@ -34,10 +34,12 @@ inline void Environment::AssignToContext(v8::Local<v8::Context> context) {
 
 
 inline Environment:: Environment(v8::Local<v8::Context> context)
-:isolate_(context->GetIsolate()){
-    v8::HandleScope handle_scope(isolate());
-    v8::Context::Scope context_scope(context);
-    set_binding_object_cache(v8::Object::New(isolate()));
+:isolate_(context->GetIsolate()),
+ context_(context->GetIsolate(),context_){
+     v8::HandleScope handle_scope(isolate());
+     v8::Context::Scope context_scope(context);
+     set_binding_object_cache(v8::Object::New(isolate()));
+     set_module_load_list_array(v8::Array::New(isolate()));
 }
 
 
@@ -50,6 +52,23 @@ inline v8::Local<v8::Object> Environment::binding_object_cache() const {
 inline void Environment::set_binding_object_cache(v8::Local<v8::Object> value) {
     binding_object_cache_.Reset(isolate(), value);
 }
+
+inline v8::Local<v8::Array> Environment::module_load_list_array() const{
+    return StrongPersistentToLocal(module_load_list_array_);
+}
+
+inline void Environment::set_module_load_list_array(v8::Local<v8::Array> value) {
+    module_load_list_array_.Reset(isolate(),value);
+}
+
+inline v8::Local<v8::Context> Environment::context() const {
+    return StrongPersistentToLocal(context_);
+}
+
+inline void Environment::set_context(v8::Local<v8::Context> value) {
+    context_.Reset(isolate(), value);
+}
+
 
 
 
