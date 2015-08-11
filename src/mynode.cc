@@ -11,6 +11,7 @@
 #include "include/v8.h"
 #include "time_wrap.h"
 #include "mynode.h"
+#include "env-inl.h"
 
 using namespace v8;
 

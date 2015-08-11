@@ -11,16 +11,7 @@
 
 using namespace mynode;
 
-static inline Environment* GetCurrent(v8::Isolate* isolate){
-    
-}
-static inline Environment* GetCurrent(v8::Local<v8::Context> context){
-    
-}
 
-static inline Environment* New(v8::Local<v8::Context> context){
-    
-}
 
 
 

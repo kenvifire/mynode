@@ -19,6 +19,7 @@ namespace mynode {
         v8::Isolate* const isolate_;
         v8::Context context_;
         v8::Persistent<v8::Object> binding_object_cache_;
+        inline Environment(v8::Local<v8::Context> context);
     public:
         static inline Environment* GetCurrent(v8::Isolate* isolate);
         static inline Environment* GetCurrent(v8::Local<v8::Context> context);
@@ -33,7 +34,8 @@ namespace mynode {
         inline v8::Local<v8::Object> binding_object_cache() const {
             return StrongPersistentToLocal(binding_object_cache_);
         }
-        
+       
+        inline void set_binding_object_cache(v8::Local<v8::Object> value) ;
      
         
     };
