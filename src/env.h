@@ -26,14 +26,14 @@ namespace mynode {
         
         static inline Environment* New(v8::Local<v8::Context> context);
         
+        inline void AssignToContext(v8::Local<v8::Context> context);
+        
         // property methods
         inline v8::Isolate* isolate() const {
             return isolate_;
         }
         
-        inline v8::Local<v8::Object> binding_object_cache() const {
-            return StrongPersistentToLocal(binding_object_cache_);
-        }
+        inline v8::Local<v8::Object> binding_object_cache() const ;
        
         inline void set_binding_object_cache(v8::Local<v8::Object> value) ;
      
