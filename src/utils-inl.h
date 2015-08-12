@@ -26,7 +26,7 @@ namespace mynode {
                                       reinterpret_cast<const uint8_t*>(data),
                                       v8::String::kNormalString,
                                         length);
-}
+    }
 }
 
 

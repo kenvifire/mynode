@@ -447,7 +447,7 @@ namespace mynode {
             }
         }
         
-        assert(mp == NULL);
+        assert(mp != NULL);
         return (mp);
     }
   
@@ -468,13 +468,16 @@ namespace mynode {
         }
         
         char buff[1024];
-        snprintf(buff, sizeof(buff), "binding %s", module->ToString());
+        unsigned char* modulename = new unsigned char[module->Utf8Length()];
+        module->WriteOneByte(modulename);
+        snprintf(buff, sizeof(buff), "binding %s", modulename);
         
         Local<Array> modules = env->module_load_list_array();
         uint32_t len = modules->Length();
         modules->Set(len, OneByteString(isolate, buff));
        
-        mynode_module* load_module = get_builttin_module(buff);
+        
+        mynode_module* load_module = get_builttin_module((char*)modulename);
         
         if(load_module != NULL) {
             exports = Object::New(env->isolate());

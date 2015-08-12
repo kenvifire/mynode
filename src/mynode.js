@@ -48,7 +48,10 @@ Module.prototype.cache = function() {
 }
 
 
+
 this.require = Module.require
+this.Timer = binding('timer').Timer;
+
 
 //this.console = require('/Users/kenvi/code/study/mynode/src/console');
 
