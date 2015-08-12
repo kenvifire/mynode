@@ -16,6 +16,8 @@
 #include "include/v8.h"
 #include "mynode.h"
 #include "time_wrap.h"
+#include "env.h"
+#include "env-inl.h"
 
 using namespace v8;
 using namespace mynode;
@@ -26,7 +28,7 @@ void Timer::Initialize(Handle<Object> target, Handle<Value> moduleName,
     Local<FunctionTemplate> constructor = FunctionTemplate::New(isolate);
     constructor->SetClassName(String::NewFromUtf8(isolate, "Timer"));
     
-    MYNODE_SET_PROTOTYPE_METHOD(constructor, "now", now);
+    MYNODE_SET_METHOD(constructor, "now", now);
     
     target->Set(String::NewFromUtf8(isolate, "Timer"), constructor->GetFunction());
     
@@ -37,16 +39,15 @@ void Timer::Initialize(Handle<Object> target, Handle<Value> moduleName,
     
     target->Set(String::NewFromUtf8(isolate, "Timer"),
                 constructor->GetFunction());
-    printf("loading timer");
     
 }
 
 void Timer::now(const FunctionCallbackInfo<Value>& args) {
     struct timeval tv;
     evutil_gettimeofday(&tv, nullptr);
-    uint32_t now = tv.tv_sec * 1000 + tv.tv_usec;
+    uint64_t now = tv.tv_sec * 1000 + tv.tv_usec;
     tv.~timeval();
-    args.GetReturnValue().Set(now);
+    args.GetReturnValue().Set(static_cast<double>(now));
     
 }
 

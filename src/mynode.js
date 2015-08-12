@@ -52,6 +52,10 @@ Module.prototype.cache = function() {
 this.require = Module.require
 this.Timer = binding('timer').Timer;
 
+print('----------');
+print(this.Timer.now());
+
+
 
 //this.console = require('/Users/kenvi/code/study/mynode/src/console');
 
