@@ -20,8 +20,8 @@ inline Environment* Environment::GetCurrent(v8::Local<v8::Context> context){
     
 }
 
-inline Environment* Environment::New(v8::Local<v8::Context> context){
-    Environment* env = new Environment(context);
+inline Environment* Environment::New(v8::Local<v8::Context> context, struct event_base *base){
+    Environment* env = new Environment(context,base);
     env->AssignToContext(context);
     
     return env;
@@ -33,13 +33,15 @@ inline void Environment::AssignToContext(v8::Local<v8::Context> context) {
 }
 
 
-inline Environment:: Environment(v8::Local<v8::Context> context)
+inline Environment:: Environment(v8::Local<v8::Context> context,struct event_base * base)
 :isolate_(context->GetIsolate()),
- context_(context->GetIsolate(),context_){
+ context_(context->GetIsolate(),context_),
+ event_base_(base){
      v8::HandleScope handle_scope(isolate());
      v8::Context::Scope context_scope(context);
      set_binding_object_cache(v8::Object::New(isolate()));
      set_module_load_list_array(v8::Array::New(isolate()));
+     event_base_ = base;
 }
 
 
@@ -69,10 +71,8 @@ inline void Environment::set_context(v8::Local<v8::Context> value) {
     context_.Reset(isolate(), value);
 }
 
-
-
-
-
-
+inline event_base* Environment::event_base() {
+    return event_base_;
+}
 
 

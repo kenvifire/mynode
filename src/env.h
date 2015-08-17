@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include "include/v8.h"
 #include "utils.h"
+#include <event2/event.h>
 
 namespace mynode {
     class Environment {
@@ -20,12 +21,13 @@ namespace mynode {
         v8::Persistent<v8::Context> context_;
         v8::Persistent<v8::Object> binding_object_cache_;
         v8::Persistent<v8::Array> module_load_list_array_;
-        inline Environment(v8::Local<v8::Context> context);
+        inline Environment(v8::Local<v8::Context> context,struct event_base* event_base);
+        struct event_base * event_base_;
     public:
         static inline Environment* GetCurrent(v8::Isolate* isolate);
         static inline Environment* GetCurrent(v8::Local<v8::Context> context);
         
-        static inline Environment* New(v8::Local<v8::Context> context);
+        static inline Environment* New(v8::Local<v8::Context> context, struct event_base* base);
         
         inline void AssignToContext(v8::Local<v8::Context> context);
         
@@ -45,6 +47,8 @@ namespace mynode {
         inline v8::Local<v8::Context> context() const;
         
         inline void set_context(v8::Local<v8::Context> value);
+        
+        inline event_base* event_base();
      
         
     };

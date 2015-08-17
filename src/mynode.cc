@@ -41,7 +41,8 @@ namespace mynode {
     Environment* CreateEnvironment(v8::Isolate* isolate,
                                    v8::Handle<v8::Context> context,
                                    int argc,
-                                   const char* const* argv
+                                   const char* const* argv,
+                                   struct event_base* base
                                    );
     static void Binding(const FunctionCallbackInfo<Value> & args);
 
@@ -282,12 +283,16 @@ namespace mynode {
 
             // Create a new context.
             Local<Context> context = CreateContext(isolate);
-            Environment* env = CreateEnvironment(isolate, context, argc, argv);
+            struct event_base* base = event_base_new();
+            Environment* env = CreateEnvironment(isolate, context, argc, argv,base);
 
             // Enter the context for compiling and running the hello world script.
             Context::Scope context_scope(context);
 
             RunMain(isolate, argc, argv);
+            
+            //event_base_dispatch(env->event_base());
+            event_base_loop(env->event_base(), EVLOOP_NO_EXIT_ON_EMPTY);
 
             // Create a string containing the JavaScript source code.
             //Local<String> source =
@@ -499,9 +504,10 @@ namespace mynode {
     Environment* CreateEnvironment(v8::Isolate* isolate,
                                    v8::Handle<v8::Context> context,
                                    int argc,
-                                   const char* const* argv
+                                   const char* const* argv,
+                                    struct event_base* base
                                    ){
-        Environment *env = Environment::New(context);
+        Environment *env = Environment::New(context,base);
         return env;
     }
 

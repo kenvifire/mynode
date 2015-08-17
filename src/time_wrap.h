@@ -21,6 +21,8 @@ namespace mynode{
         static void Initialize(Handle<Object> target, Handle<Value> unused,
                                Handle<Context> context);
         static void now(const FunctionCallbackInfo<Value>& args);
+        void setTimeout(const FunctionCallbackInfo<Value>& args);
+        void cb_func(const FunctionCallbackInfo<Value> &args);
         
     private:
         
