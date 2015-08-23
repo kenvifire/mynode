@@ -19,21 +19,27 @@
 #include "env.h"
 #include "env-inl.h"
 #include "env.cc"
+#include <assert.h>
+#include "utils.h"
+#include "utils-inl.h"
+#include "handle_wrap.h"
+#include "base-object.h"
+#include "base-object.cc"
 
 using namespace v8;
 using namespace mynode;
 
-void Timer::Initialize(Handle<Object> target, Handle<Value> moduleName,
+void TimeWrap::Initialize(Handle<Object> target, Handle<Value> moduleName,
                        Handle<Context> context){
     Isolate* isolate = Isolate::GetCurrent();
     Local<FunctionTemplate> constructor = FunctionTemplate::New(isolate);
     constructor->SetClassName(String::NewFromUtf8(isolate, "Timer"));
+    constructor->InstanceTemplate()->SetInternalFieldCount(1);
+    constructor->Set(String::NewFromUtf8(isolate, "kOnTimeout"),
+                     Integer::New(isolate, kOnTimeout));
     
     MYNODE_SET_METHOD(constructor, "now", now);
-    
-    target->Set(String::NewFromUtf8(isolate, "Timer"), constructor->GetFunction());
-    
-    
+    MYNODE_SET_PROTOTYPE_METHOD(constructor, "start", Start);
     
     
     // prototype
@@ -43,13 +49,55 @@ void Timer::Initialize(Handle<Object> target, Handle<Value> moduleName,
     
 }
 
-void Timer::now(const FunctionCallbackInfo<Value>& args) {
+
+
+void TimeWrap::now(const FunctionCallbackInfo<Value>& args) {
     Environment* env = Environment::GetCurrent(args.GetIsolate());
     struct timeval tv;
     evutil_gettimeofday(&tv, nullptr);
     uint64_t now = tv.tv_sec * 1000 + tv.tv_usec;
     tv.~timeval();
     args.GetReturnValue().Set(static_cast<double>(now));
+    
+}
+
+void TimeWrap::New(const FunctionCallbackInfo<Value>& args){
+    assert(args.IsConstructCall());
+    HandleScope handle_scope(args.GetIsolate());
+    Environment* env = Environment::GetCurrent(args.GetIsolate());
+    handle_t handle;
+    new TimeWrap(env,args.This(),&handle);
+}
+
+TimeWrap::TimeWrap(Environment* env, v8::Handle<Object> object, handle_t* handle)
+    : HandleWrap(env,object,handle)
+{
+    
+}
+
+void TimeWrap::OnTimeout(int fd, short event, void *params) {
+    TimeWrap * wrap = static_cast<TimeWrap*>(params);
+    Environment * env = wrap->env();
+    HandleScope handle_scope(env->isolate());
+    Context::Scope context_scope(env->context());
+    v8::Handle<v8::Value> cb_v = wrap->object()->Get(kOnTimeout);
+    
+    Local<Object> context = wrap->object();
+    
+    Local<Value> ret = cb_v.As<Function>()->Call(context, 0, NULL);
+}
+
+void TimeWrap::Start(const FunctionCallbackInfo<Value>& args) {
+    TimeWrap* wrap = Unwrap<TimeWrap>(args.Holder());
+    int32_t s = args[0]->IntegerValue();
+    int32_t ms = args[1]->IntegerValue();
+    
+    struct timeval tv = {s,ms};
+    struct event* ev = event_new(wrap->env()->event_base(),-1,0,OnTimeout,wrap);
+    
+}
+
+TimeWrap::~TimeWrap(){
     
 }
 
@@ -78,4 +126,6 @@ void Timer::now(const FunctionCallbackInfo<Value>& args) {
 //    
 //}
 
-MYNODE_MODULE_REGISTER(timer, mynode::Timer::Initialize, NULL, 1)
+
+
+MYNODE_MODULE_REGISTER(timer, mynode::TimeWrap::Initialize, NULL, 1)

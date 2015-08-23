@@ -8,8 +8,4 @@
 
 #include "utils.h"
 
-namespace mynode {
-  
     
-
-}

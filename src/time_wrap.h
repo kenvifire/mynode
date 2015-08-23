@@ -11,11 +11,19 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <include/v8.h>
+#include "env-inl.h"
+#include "env.h"
+#include <event2/event.h>
+#include "utils.h"
+#include <stdint.h>
+#include "handle_wrap.h"
 
 namespace mynode{
     using namespace v8;
     
-    class Timer
+    const uint32_t kOnTimeout = 0;
+    
+    class TimeWrap: public HandleWrap
     {
     public:
         static void Initialize(Handle<Object> target, Handle<Value> unused,
@@ -23,10 +31,18 @@ namespace mynode{
         static void now(const FunctionCallbackInfo<Value>& args);
         void setTimeout(const FunctionCallbackInfo<Value>& args);
         void cb_func(const FunctionCallbackInfo<Value> &args);
+        TimeWrap(Environment* env, v8::Handle<Object> object, handle_t* handle);
+        static void OnTimeout(int fd, short event, void *params);
         
     private:
+        static void New(const FunctionCallbackInfo<Value>& args);
+        static void Start(const FunctionCallbackInfo<Value>& args);
+        ~TimeWrap();
+        
+        handle_t handle__;
         
     };
+    
     
 }
 

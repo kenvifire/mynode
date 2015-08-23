@@ -54,6 +54,14 @@ this.Timer = binding('timer').Timer;
 
 print('----------');
 print(this.Timer.now());
+var timer = new Timer();
+timer.start(1000,0);
+timer[0] = onTimeout;
+
+
+function onTimeout(){
+    print('---timeout---');
+}
 
 
 
