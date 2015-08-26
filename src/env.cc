@@ -11,6 +11,8 @@
 
 using namespace mynode;
 
+struct event_base;
+
 inline Environment* Environment:: GetCurrent(v8::Isolate* isolate){
     return GetCurrent(isolate->GetCurrentContext());
     
@@ -34,9 +36,9 @@ inline void Environment::AssignToContext(v8::Local<v8::Context> context) {
 
 
 inline Environment:: Environment(v8::Local<v8::Context> context,struct event_base * base)
-:isolate_(context->GetIsolate()),
- context_(context->GetIsolate(),context_),
- event_base_(base){
+:isolate_data(IsolateData::GetOrCreate(context->GetIsolate(), base)),
+ context_(context->GetIsolate(),context_)
+ {
      v8::HandleScope handle_scope(isolate());
      v8::Context::Scope context_scope(context);
      set_binding_object_cache(v8::Object::New(isolate()));
@@ -71,8 +73,30 @@ inline void Environment::set_context(v8::Local<v8::Context> value) {
     context_.Reset(isolate(), value);
 }
 
-inline event_base* Environment::event_base() {
+inline event_base* Environment::event_loop() {
     return event_base_;
 }
 
+inline Environment::IsolateData* Environment::IsolateData::GetOrCreate(v8::Isolate* isolate, struct event_base *loop) {
+    IsolateData * isolateData = Get(isolate);
+    if(isolateData == NULL) {
+        isolateData = new IsolateData(isolate,loop);
+        isolate->SetData(NODE_ISOLATE_SLOT, isolateData);
+    }
+}
+
+inline Environment::IsolateData* Environment::IsolateData::Get(v8::Isolate* isolate) {
+    return static_cast<IsolateData*>(isolate->GetData(NODE_ISOLATE_SLOT));
+}
+
+inline Environment::IsolateData::IsolateData(v8::Isolate* isolate, struct event_base* loop)
+: isolate_(isolate),
+  event_loop_(loop)
+{
+    
+}
+
+inline v8::Isolate* Environment::IsolateData::isolate() const {
+    return isolate_;
+}
 

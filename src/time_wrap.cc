@@ -93,7 +93,7 @@ void TimeWrap::Start(const FunctionCallbackInfo<Value>& args) {
     int32_t ms = args[1]->IntegerValue();
     
     struct timeval tv = {s,ms};
-    struct event* ev = event_new(wrap->env()->event_base(),-1,0,OnTimeout,wrap);
+    struct event* ev = event_new(wrap->env()->event_loop(),-1,0,OnTimeout,wrap);
     
 }
 

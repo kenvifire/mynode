@@ -283,8 +283,7 @@ namespace mynode {
 
             // Create a new context.
             Local<Context> context = CreateContext(isolate);
-            struct event_base* base = event_base_new();
-            Environment* env = CreateEnvironment(isolate, context, argc, argv,base);
+            Environment* env = CreateEnvironment(isolate, context, argc, argv,event_base_new());
 
             // Enter the context for compiling and running the hello world script.
             Context::Scope context_scope(context);
@@ -292,7 +291,7 @@ namespace mynode {
             RunMain(isolate, argc, argv);
             
             //event_base_dispatch(env->event_base());
-            event_base_loop(env->event_base(), EVLOOP_NO_EXIT_ON_EMPTY);
+            event_base_loop(env->event_loop(), EVLOOP_NO_EXIT_ON_EMPTY);
 
             // Create a string containing the JavaScript source code.
             //Local<String> source =
@@ -507,6 +506,8 @@ namespace mynode {
                                    const char* const* argv,
                                     struct event_base* base
                                    ){
+        HandleScope handle_scope(isolate);
+        Context::Scope context_scope(context);
         Environment *env = Environment::New(context,base);
         return env;
     }
