@@ -11,6 +11,8 @@
 #include "utils-inl.h"
 #include "base-object.h"
 #include "base-object.cc"
+#include "env.h"
+#include "env.cc"
 
 namespace mynode {
    

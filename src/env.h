@@ -40,7 +40,6 @@ namespace mynode {
         v8::Persistent<v8::Object> binding_object_cache_;
         v8::Persistent<v8::Array> module_load_list_array_;
         inline Environment(v8::Local<v8::Context> context,struct event_base* event_base);
-        struct event_base * event_base_;
         
         
   

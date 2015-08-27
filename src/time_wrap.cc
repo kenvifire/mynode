@@ -17,7 +17,6 @@
 #include "mynode.h"
 #include "time_wrap.h"
 #include "env.h"
-#include "env-inl.h"
 #include "env.cc"
 #include <assert.h>
 #include "utils.h"
@@ -32,7 +31,7 @@ using namespace mynode;
 void TimeWrap::Initialize(Handle<Object> target, Handle<Value> moduleName,
                        Handle<Context> context){
     Isolate* isolate = Isolate::GetCurrent();
-    Local<FunctionTemplate> constructor = FunctionTemplate::New(isolate);
+    Local<FunctionTemplate> constructor = FunctionTemplate::New(isolate,New);
     constructor->SetClassName(String::NewFromUtf8(isolate, "Timer"));
     constructor->InstanceTemplate()->SetInternalFieldCount(1);
     constructor->Set(String::NewFromUtf8(isolate, "kOnTimeout"),
@@ -94,7 +93,7 @@ void TimeWrap::Start(const FunctionCallbackInfo<Value>& args) {
     
     struct timeval tv = {s,ms};
     struct event* ev = event_new(wrap->env()->event_loop(),-1,0,OnTimeout,wrap);
-    
+    event_add(ev, &tv);
 }
 
 TimeWrap::~TimeWrap(){

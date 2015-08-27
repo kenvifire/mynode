@@ -43,7 +43,6 @@ inline Environment:: Environment(v8::Local<v8::Context> context,struct event_bas
      v8::Context::Scope context_scope(context);
      set_binding_object_cache(v8::Object::New(isolate()));
      set_module_load_list_array(v8::Array::New(isolate()));
-     event_base_ = base;
 }
 
 
@@ -74,7 +73,7 @@ inline void Environment::set_context(v8::Local<v8::Context> value) {
 }
 
 inline event_base* Environment::event_loop() {
-    return event_base_;
+    return isolate_data->event_loop();
 }
 
 inline Environment::IsolateData* Environment::IsolateData::GetOrCreate(v8::Isolate* isolate, struct event_base *loop) {
@@ -83,6 +82,7 @@ inline Environment::IsolateData* Environment::IsolateData::GetOrCreate(v8::Isola
         isolateData = new IsolateData(isolate,loop);
         isolate->SetData(NODE_ISOLATE_SLOT, isolateData);
     }
+    return isolateData;
 }
 
 inline Environment::IsolateData* Environment::IsolateData::Get(v8::Isolate* isolate) {
@@ -98,5 +98,10 @@ inline Environment::IsolateData::IsolateData(v8::Isolate* isolate, struct event_
 
 inline v8::Isolate* Environment::IsolateData::isolate() const {
     return isolate_;
+}
+
+inline struct event_base* Environment::IsolateData:: event_loop() const {
+    return event_loop_;
+    
 }
 
