@@ -37,7 +37,7 @@ inline void Environment::AssignToContext(v8::Local<v8::Context> context) {
 
 inline Environment:: Environment(v8::Local<v8::Context> context,struct event_base * base)
 :isolate_data(IsolateData::GetOrCreate(context->GetIsolate(), base)),
- context_(context->GetIsolate(),context_)
+ context_(context->GetIsolate(),context)
  {
      v8::HandleScope handle_scope(isolate());
      v8::Context::Scope context_scope(context);

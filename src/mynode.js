@@ -52,17 +52,25 @@ Module.prototype.cache = function() {
 this.require = Module.require
 this.Timer = binding('timer').Timer;
 
+/**
+this.setTimeout = function() {
+   var t = binding('timer')
+}
+
 print('----------');
 print(this.Timer.now());
 var timer = new Timer();
-timer.start(1000,0);
+timer.start(1,0);
 timer[0] = onTimeout;
+
+**/
+
+var timer = require('/Users/hannahzhang/code/v8_work/mynode/src/timer');
 
 
 function onTimeout(){
     print('---timeout---');
 }
-
 
 
 //this.console = require('/Users/kenvi/code/study/mynode/src/console');
