@@ -31,6 +31,8 @@ namespace mynode {
     
     template <typename TypeName>
     void Wrap(v8::Local<v8::Object> object, TypeName* pointer) {
+        assert(!object.IsEmpty());
+        assert(object->InternalFieldCount()>0);
         object->SetAlignedPointerInInternalField(0, pointer);
     }
     

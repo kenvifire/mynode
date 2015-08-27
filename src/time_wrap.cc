@@ -81,6 +81,9 @@ void TimeWrap::OnTimeout(int fd, short event, void *params) {
     Context::Scope context_scope(env->context());
     v8::Handle<v8::Value> cb_v = wrap->object()->Get(kOnTimeout);
     
+    printf("%d",kOnTimeout);
+    assert(cb_v->IsFunction());
+    
     Local<Object> context = wrap->object();
     
     Local<Value> ret = cb_v.As<Function>()->Call(context, 0, NULL);
