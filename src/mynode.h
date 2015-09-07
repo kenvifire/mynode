@@ -103,6 +103,24 @@ namespace mynode {
              mynode_module_register(&_module);                       \
          }                                                          \
         }
+    
+#define MYNODE_DEFINE_CONSTANT(target, constant)                    \
+    do {                                                            \
+    v8::Isolate* isolate = v8::Isolate::GetCurrent();               \
+    v8::Local<v8::String> constant_name =                           \
+        v8::String::NewFromUtf8(isolate, #constant);                \
+    v8::Local<v8::Number> constant_value =                          \
+        v8::Number::New(isolate, static_cast<double>(constant));    \
+    v8::PropertyAttribute constant_attributes =                     \
+        static_cast<v8::PropertyAttribute>(v8::ReadOnly | v8::DontDelete);\
+    (target)->ForceSet(constant_name,constant_value,constant_attributes); \
+    }                                                                          \
+while (0);
+
+
+
+    
+    
 }
 
 #endif

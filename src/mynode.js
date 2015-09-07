@@ -59,20 +59,25 @@ print(this.Timer.now());
 //var timer = new Timer();
 //timer[0] = onTimeout;
 //timer.start(5,0);
-function onTimeout(){
-    print('---timeout---');
-}
+
 
 
 
 
 var timer = require('/Users/hannahzhang/code/v8_work/mynode/src/timer');
+var fs = require('/Users/hannahzhang/code/v8_work/mynode/src/fs');
 
 
 
 
-timer.setTimeout(onTimeout,3000);
+this.setTimeout = timer.setTimeout;
 
+setTimeout(onTimeout,1000);
+
+function onTimeout(){
+    print('---timeout---');
+    setTimeout(arguments.callee,1000);
+}
 
 
 

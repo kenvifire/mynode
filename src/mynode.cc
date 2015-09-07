@@ -15,6 +15,7 @@
 #include "env.cc"
 #include "utils.h"
 #include "utils-inl.h"
+#include "mynode_constants.h"
 
 using namespace v8;
 
@@ -451,7 +452,7 @@ namespace mynode {
             }
         }
         
-        assert(mp != NULL);
+        //assert(mp != NULL);
         return (mp);
     }
   
@@ -494,6 +495,11 @@ namespace mynode {
            
             args.GetReturnValue().Set(exports);
             
+        } else if(!strcmp((char*)modulename, "constants")) {
+            exports = Object::New(env->isolate());
+            DefineConstants(exports);
+            cache->Set(module, exports);
+            args.GetReturnValue().Set(exports);
         }
         
         
